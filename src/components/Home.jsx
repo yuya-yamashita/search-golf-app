@@ -19,16 +19,26 @@ class Home extends React.Component {
         departure: '1',
         duration: '90',
         plans: [],
-        planCount: 0
+        planCount: 0,
+        error: null
     };
 
     onFormSubmit = async (event) => {
-        event.preventDefault();
-
-        const response = await axios.get('https://l1kwik11ne.execute-api.ap-northeast-1.amazonaws.com/production/golf-courses', {
-            params: { date: format(this.state.date, 'yyyyMMdd'), budget: this.state.budget, departure: this.state.departure, duration: this.state.duration }
-        });
-        this.setState({ planCount: response.data.planCount, plans: response.data.plans});
+        try {
+            event.preventDefault();
+            const response = await axios.get('https://l1kwik11ne.execute-api.ap-northeast-1.amazonaws.com/production/golf-courses', {
+                params: {
+                    date: format(this.state.date, 'yyyyMMdd'),
+                    budget: this.state.budget,
+                    departure: this.state.departure,
+                    duration: this.state.duration
+                }
+            });
+            this.setState({planCount: response.data.planCount, plans: response.data.plans});
+        }
+        catch (e) {
+            this.setState({ error: e })
+        }
     };
 
     render() {
@@ -77,6 +87,7 @@ class Home extends React.Component {
                     <Result
                         plans={this.state.plans}
                         planCount={this.state.planCount}
+                        error={this.state.error}
                     />
                 </div>
             </div>
